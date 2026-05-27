@@ -1,0 +1,2129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0A1628">
+<title>UAQ-SECURITY | Digital Parking Tracker</title>
+<link rel="manifest" href="data:application/json,{%22name%22:%22UAQ-SECURITY%22,%22short_name%22:%22UAQ-SEC%22,%22display%22:%22standalone%22,%22background_color%22:%22%230A1628%22,%22theme_color%22:%22%230A1628%22}">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #0D1F3C;
+  --primary-light: #1A3260;
+  --primary-mid: #152A50;
+  --accent-gold: #C9A84C;
+  --accent-gold-light: #E8C96A;
+  --accent-silver: #B8C4D0;
+  --accent-silver-light: #D8E4F0;
+  --danger: #E53935;
+  --danger-light: #FF5252;
+  --success: #2ECC71;
+  --success-light: #4CAF50;
+  --pol-color: #E53935;
+  --missing-color: #E53935;
+  --surface: #F0F4FA;
+  --surface2: #E4EAF5;
+  --card-bg: #FFFFFF;
+  --text-primary: #0A1628;
+  --text-secondary: #4A5568;
+  --text-muted: #8899AA;
+  --border: #D0DAE8;
+  --shadow-sm: 0 2px 8px rgba(13,31,60,0.12);
+  --shadow-md: 0 4px 20px rgba(13,31,60,0.18);
+  --shadow-lg: 0 8px 40px rgba(13,31,60,0.25);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --fab-size: 60px;
+  --header-h: 64px;
+  --nav-h: 68px;
+  --font-brand: 'Orbitron', sans-serif;
+  --font-ui: 'Rajdhani', sans-serif;
+  --font-body: 'Inter', sans-serif;
+}
+.dark-mode {
+  --surface: #0A1628;
+  --surface2: #0D1F3C;
+  --card-bg: #152A50;
+  --text-primary: #E8F0FF;
+  --text-secondary: #9BB3CC;
+  --text-muted: #5A7A99;
+  --border: #1E3A5A;
+  --shadow-sm: 0 2px 8px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 20px rgba(0,0,0,0.5);
+  --shadow-lg: 0 8px 40px rgba(0,0,0,0.6);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html,body{height:100%;overflow:hidden;font-family:var(--font-body);background:var(--surface);}
+body{display:flex;flex-direction:column;position:relative;}
+
+/* ── SCREENS ── */
+.screen{position:fixed;inset:0;display:flex;flex-direction:column;background:var(--surface);transition:opacity 0.3s,transform 0.3s;z-index:10;}
+.screen.hidden{opacity:0;pointer-events:none;transform:translateX(100%);}
+.screen.slide-in{animation:slideIn 0.32s cubic-bezier(0.34,1.12,0.64,1) forwards;}
+.screen.slide-out{animation:slideOut 0.28s ease-in forwards;}
+@keyframes slideIn{from{transform:translateX(100%);opacity:0}to{transform:translateX(0);opacity:1}}
+@keyframes slideOut{from{transform:translateX(0);opacity:1}to{transform:translateX(-30%);opacity:0}}
+
+/* ── SPLASH ── */
+#splash{background:linear-gradient(145deg,#050E1F 0%,#0A1628 40%,#0D2347 70%,#050E1F 100%);z-index:1000;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;}
+.splash-shield{animation:shieldPulse 2s ease-in-out infinite;}
+@keyframes shieldPulse{0%,100%{filter:drop-shadow(0 0 20px #C9A84C88);}50%{filter:drop-shadow(0 0 40px #C9A84CCC);}}
+.splash-logo-text{font-family:var(--font-brand);font-size:28px;font-weight:900;letter-spacing:4px;color:#C9A84C;text-shadow:0 0 30px #C9A84C88;}
+.splash-sub{font-family:var(--font-ui);font-size:15px;font-weight:500;letter-spacing:3px;color:#8899AA;text-transform:uppercase;}
+.splash-footer{position:absolute;bottom:40px;text-align:center;}
+.splash-footer .by{font-family:var(--font-body);font-size:11px;color:#3A5070;letter-spacing:1px;}
+.splash-footer .author{font-family:var(--font-ui);font-size:16px;font-weight:600;color:#7090AA;letter-spacing:2px;}
+.splash-bar{width:200px;height:3px;background:#0D2347;border-radius:2px;overflow:hidden;margin-top:8px;}
+.splash-bar-fill{height:100%;background:linear-gradient(90deg,#C9A84C,#E8C96A);width:0%;animation:loadBar 2s linear forwards;}
+@keyframes loadBar{to{width:100%}}
+.splash-rings{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);pointer-events:none;}
+.ring{position:absolute;border-radius:50%;border:1px solid #C9A84C22;animation:ringExpand 2s ease-out infinite;}
+.ring:nth-child(1){width:300px;height:300px;margin:-150px;animation-delay:0s;}
+.ring:nth-child(2){width:450px;height:450px;margin:-225px;animation-delay:0.5s;}
+.ring:nth-child(3){width:600px;height:600px;margin:-300px;animation-delay:1s;}
+@keyframes ringExpand{0%{opacity:0.6;transform:scale(0.3);}100%{opacity:0;transform:scale(1);}}
+
+/* ── WELCOME ── */
+#welcome{background:linear-gradient(145deg,#050E1F,#0A1628,#0D2347);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;}
+.welcome-quote{font-family:var(--font-ui);font-size:22px;font-weight:600;color:#C9A84C;text-align:center;padding:0 40px;line-height:1.5;letter-spacing:1px;animation:fadeUp 0.8s ease forwards;}
+.welcome-line{width:60px;height:2px;background:linear-gradient(90deg,transparent,#C9A84C,transparent);margin:20px auto;animation:fadeUp 0.8s 0.3s ease forwards;opacity:0;}
+.welcome-sub{font-family:var(--font-body);font-size:13px;color:#5A7A99;text-align:center;animation:fadeUp 0.8s 0.5s ease forwards;opacity:0;letter-spacing:2px;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+
+/* ── LOGIN ── */
+#login{background:linear-gradient(145deg,#050E1F 0%,#0A1628 50%,#061020 100%);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:998;}
+.login-bg-pattern{position:absolute;inset:0;background-image:repeating-linear-gradient(0deg,transparent,transparent 48px,#C9A84C08 48px,#C9A84C08 50px),repeating-linear-gradient(90deg,transparent,transparent 48px,#C9A84C08 48px,#C9A84C08 50px);pointer-events:none;}
+.login-card{background:rgba(255,255,255,0.04);backdrop-filter:blur(20px);border:1px solid rgba(201,168,76,0.2);border-radius:24px;padding:36px 28px;width:calc(100% - 48px);max-width:380px;box-shadow:0 20px 60px rgba(0,0,0,0.5);}
+.login-logo{text-align:center;margin-bottom:28px;}
+.login-logo .brand{font-family:var(--font-brand);font-size:22px;font-weight:900;letter-spacing:4px;color:#C9A84C;}
+.login-logo .sub{font-family:var(--font-ui);font-size:12px;color:#5A7A99;letter-spacing:3px;margin-top:4px;}
+.login-title{font-family:var(--font-ui);font-size:18px;font-weight:600;color:#8899AA;text-align:center;margin-bottom:24px;letter-spacing:2px;}
+.input-group{position:relative;margin-bottom:20px;}
+.input-group label{display:block;font-family:var(--font-ui);font-size:12px;font-weight:600;color:#5A7A99;letter-spacing:2px;margin-bottom:8px;}
+.input-group input{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(201,168,76,0.2);border-radius:12px;padding:14px 16px;font-family:var(--font-body);font-size:16px;color:#D0E0F0;outline:none;transition:all 0.2s;}
+.input-group input:focus{border-color:#C9A84C;background:rgba(201,168,76,0.06);box-shadow:0 0 0 3px rgba(201,168,76,0.12);}
+.input-group .eye-toggle{position:absolute;right:14px;bottom:14px;cursor:pointer;color:#5A7A99;}
+.btn-login{width:100%;background:linear-gradient(135deg,#C9A84C,#E8C96A);border:none;border-radius:12px;padding:16px;font-family:var(--font-ui);font-size:17px;font-weight:700;color:#0A1628;letter-spacing:2px;cursor:pointer;transition:all 0.2s;margin-top:8px;}
+.btn-login:active{transform:scale(0.98);opacity:0.9;}
+.login-hint{text-align:center;margin-top:16px;font-family:var(--font-body);font-size:12px;color:#3A5070;}
+
+/* ── APP HEADER ── */
+.app-header{height:var(--header-h);background:var(--primary);display:flex;align-items:center;padding:0 12px;gap:8px;flex-shrink:0;box-shadow:0 2px 10px rgba(0,0,0,0.3);position:relative;z-index:5;}
+.header-back{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:#C9A84C;transition:background 0.15s;}
+.header-back:active{background:rgba(201,168,76,0.2);}
+.header-title{flex:1;display:flex;flex-direction:column;}
+.header-title .main{font-family:var(--font-brand);font-size:14px;font-weight:700;color:#C9A84C;letter-spacing:2px;}
+.header-title .sub{font-family:var(--font-ui);font-size:11px;color:#5A7A99;letter-spacing:1px;}
+.header-actions{display:flex;gap:4px;}
+.header-btn{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:50%;cursor:pointer;color:#B8C4D0;transition:background 0.15s;}
+.header-btn:active{background:rgba(184,196,208,0.2);}
+
+/* ── SCROLLABLE CONTENT ── */
+.scroll-content{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding-bottom:calc(var(--fab-size) + 80px);}
+.scroll-content.no-fab{padding-bottom:20px;}
+
+/* ── DASHBOARD ── */
+.dash-header{background:linear-gradient(160deg,var(--primary) 0%,var(--primary-light) 100%);padding:20px 16px 28px;position:relative;overflow:hidden;}
+.dash-header::before{content:'';position:absolute;right:-40px;top:-40px;width:200px;height:200px;background:radial-gradient(circle,#C9A84C15,transparent 70%);pointer-events:none;}
+.dash-brand{font-family:var(--font-brand);font-size:20px;font-weight:900;color:#C9A84C;letter-spacing:3px;}
+.dash-subtitle{font-family:var(--font-ui);font-size:12px;color:#5A7A99;letter-spacing:2px;margin-top:2px;}
+.dash-datetime{margin-top:16px;display:flex;flex-direction:column;gap:2px;}
+.dash-date{font-family:var(--font-ui);font-size:14px;color:#8899AA;letter-spacing:1px;}
+.dash-time{font-family:var(--font-brand);font-size:36px;font-weight:700;color:#D0E0F0;letter-spacing:2px;line-height:1;}
+
+/* ── STAT CARDS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px;}
+.stat-card{background:var(--card-bg);border-radius:16px;padding:16px;box-shadow:var(--shadow-sm);position:relative;overflow:hidden;border:1px solid var(--border);}
+.stat-card::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
+.stat-card.daily::after{background:linear-gradient(90deg,#C9A84C,#E8C96A);}
+.stat-card.pri::after{background:linear-gradient(90deg,#1A5276,#2980B9);}
+.stat-card.pol::after{background:linear-gradient(90deg,#E53935,#FF5252);}
+.stat-card.missing::after{background:linear-gradient(90deg,#E53935,#FF8A80);}
+.stat-card .label{font-family:var(--font-ui);font-size:12px;font-weight:600;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;}
+.stat-card .value{font-family:var(--font-brand);font-size:40px;font-weight:900;margin-top:4px;line-height:1;}
+.stat-card.daily .value{color:var(--accent-gold);}
+.stat-card.pri .value{color:#2980B9;}
+.stat-card.pol .value{color:var(--danger);}
+.stat-card.missing .value{color:var(--danger);}
+.stat-card .icon{position:absolute;right:12px;bottom:10px;opacity:0.15;}
+.counter-anim{animation:counterPop 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes counterPop{0%{transform:scale(1.3);}100%{transform:scale(1);}}
+
+/* ── ACTION CARDS ── */
+.action-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 16px;}
+.action-card{background:var(--card-bg);border-radius:16px;padding:20px 16px;box-shadow:var(--shadow-sm);border:1px solid var(--border);cursor:pointer;transition:all 0.15s;display:flex;flex-direction:column;align-items:flex-start;gap:10px;}
+.action-card:active{transform:scale(0.97);box-shadow:var(--shadow-sm);}
+.action-card .ac-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.action-card.logs .ac-icon{background:#EBF5FB;}
+.action-card.export .ac-icon{background:#EAFAF1;}
+.action-card.settings .ac-icon{background:#F8F9FA;}
+.action-card .ac-title{font-family:var(--font-ui);font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:1px;}
+.action-card .ac-desc{font-family:var(--font-body);font-size:12px;color:var(--text-muted);}
+.dark-mode .action-card.logs .ac-icon{background:rgba(41,128,185,0.2);}
+.dark-mode .action-card.export .ac-icon{background:rgba(46,204,113,0.2);}
+.dark-mode .action-card.settings .ac-icon{background:rgba(184,196,208,0.1);}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:24px;right:20px;width:var(--fab-size);height:var(--fab-size);border-radius:50%;background:linear-gradient(135deg,#C9A84C,#E8C96A);box-shadow:0 6px 20px rgba(201,168,76,0.5);display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:100;transition:all 0.2s;border:none;}
+.fab:active{transform:scale(0.92);}
+.fab.hidden{opacity:0;pointer-events:none;transform:scale(0);}
+
+/* ── SECTION HEADERS ── */
+.section-header{display:flex;align-items:center;gap:10px;padding:20px 16px 8px;}
+.section-header .sh-title{font-family:var(--font-ui);font-size:16px;font-weight:700;color:var(--text-primary);letter-spacing:1px;}
+.section-header .sh-line{flex:1;height:1px;background:var(--border);}
+
+/* ── FORM STYLES ── */
+.form-container{padding:16px;}
+.form-section{background:var(--card-bg);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid var(--border);box-shadow:var(--shadow-sm);}
+.form-section-title{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--accent-gold);letter-spacing:2px;text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid var(--border);}
+.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.field{margin-bottom:16px;}
+.field:last-child{margin-bottom:0;}
+.field label{display:block;font-family:var(--font-ui);font-size:12px;font-weight:700;color:var(--text-secondary);letter-spacing:1.5px;text-transform:uppercase;margin-bottom:8px;}
+.field label .req{color:var(--danger);}
+.field input,.field select,.field textarea{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:14px 14px;font-family:var(--font-body);font-size:16px;color:var(--text-primary);outline:none;transition:all 0.2s;-webkit-appearance:none;appearance:none;}
+.field input:focus,.field select:focus,.field textarea:focus{border-color:var(--accent-gold);background:var(--card-bg);box-shadow:0 0 0 3px rgba(201,168,76,0.15);}
+.field input.error,.field select.error{border-color:var(--danger);box-shadow:0 0 0 3px rgba(229,57,53,0.12);}
+.field .error-msg{font-family:var(--font-body);font-size:12px;color:var(--danger);margin-top:4px;display:none;}
+.field .error-msg.show{display:block;}
+.field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%238899AA' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;padding-right:40px;}
+.dark-mode .field select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24'%3E%3Cpath fill='%235A7A99' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");}
+.field input[readonly]{background:var(--surface2);color:var(--text-muted);cursor:default;}
+.field textarea{resize:none;min-height:80px;}
+
+/* ── PREVIEW CARD ── */
+.preview-card{background:linear-gradient(135deg,var(--primary) 0%,var(--primary-light) 100%);border-radius:16px;padding:16px;margin-bottom:16px;border:1px solid rgba(201,168,76,0.3);box-shadow:var(--shadow-md);}
+.preview-plate{font-family:var(--font-brand);font-size:22px;font-weight:900;color:#C9A84C;letter-spacing:3px;}
+.preview-model{font-family:var(--font-ui);font-size:16px;font-weight:600;color:#B8C4D0;margin-top:4px;letter-spacing:1px;}
+.preview-row{display:flex;gap:16px;margin-top:12px;flex-wrap:wrap;}
+.preview-badge{background:rgba(255,255,255,0.08);border-radius:8px;padding:6px 12px;font-family:var(--font-ui);font-size:13px;font-weight:600;color:#8899AA;letter-spacing:1px;}
+.preview-badge.pol{color:#FF5252;}
+.preview-badge.missing{color:#FF5252;}
+
+/* ── SUBMIT BTN ── */
+.btn-submit{width:100%;background:linear-gradient(135deg,#C9A84C,#E8C96A);border:none;border-radius:14px;padding:18px;font-family:var(--font-ui);font-size:18px;font-weight:700;color:#0A1628;letter-spacing:2px;cursor:pointer;transition:all 0.2s;box-shadow:0 4px 15px rgba(201,168,76,0.4);}
+.btn-submit:active{transform:scale(0.98);}
+
+/* ── LOG SCREEN ── */
+.search-bar{padding:12px 16px;background:var(--card-bg);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:3;}
+.search-input-wrap{position:relative;}
+.search-input-wrap input{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:12px;padding:12px 14px 12px 44px;font-family:var(--font-body);font-size:15px;color:var(--text-primary);outline:none;transition:border-color 0.2s;}
+.search-input-wrap input:focus{border-color:var(--accent-gold);}
+.search-input-wrap .search-icon{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);}
+.date-group{margin-bottom:8px;}
+.date-group-header{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;background:var(--surface2);border-bottom:1px solid var(--border);}
+.date-group-header .dg-title{font-family:var(--font-ui);font-size:14px;font-weight:700;color:var(--text-secondary);letter-spacing:1px;}
+.date-group-header .dg-count{font-family:var(--font-body);font-size:12px;color:var(--text-muted);}
+.date-group-header .dg-chevron{color:var(--text-muted);transition:transform 0.2s;}
+.date-group-header.collapsed .dg-chevron{transform:rotate(-90deg);}
+.date-group-body{overflow:hidden;}
+.log-card{background:var(--card-bg);margin:8px 12px;border-radius:14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);overflow:hidden;}
+.log-card-header{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid var(--border);}
+.log-plate{font-family:var(--font-brand);font-size:18px;font-weight:900;color:var(--accent-gold);letter-spacing:2px;}
+.log-time{font-family:var(--font-body);font-size:12px;color:var(--text-muted);}
+.log-card-body{padding:10px 14px;}
+.log-details{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;}
+.log-badge{padding:4px 10px;border-radius:20px;font-family:var(--font-ui);font-size:12px;font-weight:600;letter-spacing:0.5px;}
+.log-badge.model{background:var(--surface2);color:var(--text-secondary);}
+.log-badge.parking{background:#EBF5FB;color:#1A5276;}
+.log-badge.cat-pri{background:#EBF5FB;color:#1A5276;}
+.log-badge.cat-pol{background:#FDEDEC;color:#E53935;}
+.log-badge.key-missing{background:#FDEDEC;color:#E53935;}
+.log-badge.key-security{background:#EAFAF1;color:#1E8449;}
+.log-badge.key-car{background:#FEF9E7;color:#B7770D;}
+.log-badge.key-technician{background:#F4ECF7;color:#7D3C98;}
+.dark-mode .log-badge.model{background:rgba(255,255,255,0.08);color:var(--text-secondary);}
+.dark-mode .log-badge.parking{background:rgba(41,128,185,0.2);color:#5DADE2;}
+.dark-mode .log-badge.cat-pri{background:rgba(41,128,185,0.2);color:#5DADE2;}
+.dark-mode .log-badge.cat-pol{background:rgba(229,57,53,0.2);color:#FF5252;}
+.dark-mode .log-badge.key-missing{background:rgba(229,57,53,0.2);color:#FF5252;}
+.dark-mode .log-badge.key-security{background:rgba(46,204,113,0.2);color:#2ECC71;}
+.dark-mode .log-badge.key-car{background:rgba(201,168,76,0.2);color:#E8C96A;}
+.dark-mode .log-badge.key-technician{background:rgba(125,60,152,0.2);color:#BB8FCE;}
+.log-note{font-family:var(--font-body);font-size:12px;color:var(--text-muted);font-style:italic;margin-bottom:8px;}
+.log-card-actions{display:flex;gap:8px;}
+.log-btn{flex:1;border:none;border-radius:8px;padding:8px;font-family:var(--font-ui);font-size:13px;font-weight:700;letter-spacing:1px;cursor:pointer;transition:all 0.15s;}
+.log-btn.edit{background:var(--surface2);color:var(--text-secondary);}
+.log-btn.delete{background:#FDEDEC;color:var(--danger);}
+.dark-mode .log-btn.edit{background:rgba(255,255,255,0.08);color:var(--text-secondary);}
+.dark-mode .log-btn.delete{background:rgba(229,57,53,0.15);color:#FF5252;}
+.log-btn:active{transform:scale(0.97);}
+.no-results{text-align:center;padding:60px 20px;}
+.no-results .nr-icon{font-size:64px;margin-bottom:16px;opacity:0.3;}
+.no-results .nr-text{font-family:var(--font-ui);font-size:16px;color:var(--text-muted);letter-spacing:1px;}
+
+/* ── EXPORT SCREEN ── */
+.export-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px;}
+.export-card{background:var(--card-bg);border-radius:16px;padding:20px 14px;border:1px solid var(--border);box-shadow:var(--shadow-sm);cursor:pointer;transition:all 0.15s;text-align:center;}
+.export-card:active{transform:scale(0.97);}
+.export-card .ec-icon{width:56px;height:56px;border-radius:16px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;}
+.export-card.pdf .ec-icon{background:#FDEDEC;}
+.export-card.excel .ec-icon{background:#EAFAF1;}
+.export-card.word .ec-icon{background:#EBF5FB;}
+.export-card.txt .ec-icon{background:#F8F9FA;}
+.export-card.whatsapp .ec-icon{background:#EAFAF1;}
+.export-card .ec-title{font-family:var(--font-ui);font-size:15px;font-weight:700;color:var(--text-primary);letter-spacing:1px;}
+.export-card .ec-desc{font-family:var(--font-body);font-size:11px;color:var(--text-muted);margin-top:4px;}
+.dark-mode .export-card.pdf .ec-icon{background:rgba(229,57,53,0.2);}
+.dark-mode .export-card.excel .ec-icon{background:rgba(46,204,113,0.2);}
+.dark-mode .export-card.word .ec-icon{background:rgba(41,128,185,0.2);}
+.dark-mode .export-card.txt .ec-icon{background:rgba(184,196,208,0.1);}
+.dark-mode .export-card.whatsapp .ec-icon{background:rgba(37,211,102,0.2);}
+
+/* ── SETTINGS SCREEN ── */
+.settings-group{background:var(--card-bg);border-radius:16px;margin:0 16px 16px;border:1px solid var(--border);overflow:hidden;}
+.settings-group-title{font-family:var(--font-ui);font-size:12px;font-weight:700;color:var(--accent-gold);letter-spacing:2px;padding:12px 16px 8px;text-transform:uppercase;}
+.settings-item{display:flex;align-items:center;padding:16px;border-bottom:1px solid var(--border);cursor:pointer;transition:background 0.15s;gap:14px;}
+.settings-item:last-child{border-bottom:none;}
+.settings-item:active{background:var(--surface2);}
+.settings-item .si-icon{width:40px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.settings-item .si-content{flex:1;}
+.settings-item .si-title{font-family:var(--font-ui);font-size:15px;font-weight:600;color:var(--text-primary);letter-spacing:0.5px;}
+.settings-item .si-desc{font-family:var(--font-body);font-size:12px;color:var(--text-muted);margin-top:2px;}
+.settings-item .si-right{color:var(--text-muted);}
+.toggle-switch{width:50px;height:28px;background:#D0DAE8;border-radius:14px;position:relative;transition:background 0.2s;cursor:pointer;flex-shrink:0;}
+.toggle-switch.on{background:var(--accent-gold);}
+.toggle-switch::after{content:'';position:absolute;width:22px;height:22px;border-radius:50%;background:#fff;top:3px;left:3px;transition:transform 0.2s;box-shadow:0 1px 3px rgba(0,0,0,0.3);}
+.toggle-switch.on::after{transform:translateX(22px);}
+
+/* ── DIALOGS ── */
+.dialog-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:500;display:flex;align-items:flex-end;justify-content:center;animation:fadeIn 0.2s ease;}
+.dialog-overlay.hidden{display:none;}
+.dialog-overlay.center{align-items:center;}
+@keyframes fadeIn{from{opacity:0;}to{opacity:1;}}
+.dialog-sheet{background:var(--card-bg);border-radius:24px 24px 0 0;width:100%;max-width:420px;padding:20px;animation:slideUp 0.3s cubic-bezier(0.34,1.12,0.64,1);}
+.dialog-sheet.center-dialog{border-radius:24px;margin:20px;animation:popIn 0.3s cubic-bezier(0.34,1.56,0.64,1);}
+@keyframes slideUp{from{transform:translateY(100%);}to{transform:translateY(0);}}
+@keyframes popIn{from{opacity:0;transform:scale(0.8);}to{opacity:1;transform:scale(1);}}
+.dialog-handle{width:36px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.dialog-title{font-family:var(--font-ui);font-size:18px;font-weight:700;color:var(--text-primary);letter-spacing:1px;margin-bottom:8px;}
+.dialog-msg{font-family:var(--font-body);font-size:14px;color:var(--text-secondary);margin-bottom:20px;line-height:1.5;}
+.dialog-actions{display:flex;flex-direction:column;gap:10px;}
+.dialog-btn{border:none;border-radius:12px;padding:14px;font-family:var(--font-ui);font-size:15px;font-weight:700;cursor:pointer;letter-spacing:1px;transition:all 0.15s;}
+.dialog-btn:active{transform:scale(0.98);}
+.dialog-btn.primary{background:linear-gradient(135deg,#C9A84C,#E8C96A);color:#0A1628;}
+.dialog-btn.danger{background:#FDEDEC;color:var(--danger);}
+.dialog-btn.secondary{background:var(--surface2);color:var(--text-secondary);}
+.dialog-btn.ghost{background:transparent;color:var(--text-muted);}
+.dark-mode .dialog-btn.danger{background:rgba(229,57,53,0.2);color:#FF5252;}
+.dark-mode .dialog-btn.secondary{background:rgba(255,255,255,0.08);}
+
+/* ── SNACKBAR ── */
+.snackbar{position:fixed;bottom:90px;left:16px;right:16px;background:#1A3260;color:#E8F0FF;border-radius:12px;padding:14px 16px;font-family:var(--font-body);font-size:14px;z-index:600;box-shadow:var(--shadow-lg);display:flex;align-items:center;gap:10px;transform:translateY(200%);transition:transform 0.3s cubic-bezier(0.34,1.12,0.64,1);}
+.snackbar.show{transform:translateY(0);}
+.snackbar.success{background:#1E5631;border-left:4px solid var(--success);}
+.snackbar.error{background:#641E16;border-left:4px solid var(--danger);}
+.snackbar.warning{background:#7D6608;border-left:4px solid var(--accent-gold);}
+
+/* ── FOOTER ── */
+.app-footer{text-align:center;padding:12px;border-top:1px solid var(--border);background:var(--card-bg);}
+.footer-by{font-family:var(--font-body);font-size:10px;color:var(--text-muted);letter-spacing:1px;}
+.footer-name{font-family:var(--font-ui);font-size:13px;font-weight:700;color:var(--text-secondary);letter-spacing:1.5px;}
+
+/* ── ABOUT ── */
+.about-container{padding:24px 16px;}
+.about-logo{text-align:center;margin-bottom:24px;}
+.about-brand{font-family:var(--font-brand);font-size:24px;font-weight:900;color:var(--accent-gold);letter-spacing:4px;}
+.about-sub{font-family:var(--font-ui);font-size:13px;color:var(--text-muted);letter-spacing:2px;margin-top:4px;}
+.about-desc{font-family:var(--font-body);font-size:14px;color:var(--text-secondary);text-align:center;margin:20px 0;line-height:1.6;}
+.about-creator{background:var(--card-bg);border-radius:16px;padding:20px;border:1px solid var(--border);text-align:center;}
+.about-creator .ac-label{font-family:var(--font-body);font-size:12px;color:var(--text-muted);}
+.about-creator .ac-name{font-family:var(--font-ui);font-size:20px;font-weight:700;color:var(--accent-gold);letter-spacing:2px;margin-top:4px;}
+
+/* ── CHANGE PASSWORD ── */
+.cp-container{padding:20px 16px;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* ── UTILS ── */
+.mt-16{margin-top:16px;}
+.px-16{padding:0 16px;}
+.hidden{display:none!important;}
+.flex{display:flex;}
+.items-center{align-items:center;}
+.gap-8{gap:8px;}
+.w-full{width:100%;}
+.text-danger{color:var(--danger);}
+.text-gold{color:var(--accent-gold);}
+.font-ui{font-family:var(--font-ui);}
+
+/* ── SUCCESS ANIMATION ── */
+.success-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:700;display:flex;align-items:center;justify-content:center;animation:fadeIn 0.3s;}
+.success-overlay.hidden{display:none;}
+.success-box{background:var(--card-bg);border-radius:24px;padding:40px 30px;text-align:center;animation:popIn 0.4s cubic-bezier(0.34,1.56,0.64,1);}
+.success-circle{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,#2ECC71,#27AE60);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;animation:successPop 0.5s 0.2s cubic-bezier(0.34,1.56,0.64,1) both;}
+@keyframes successPop{from{transform:scale(0);}to{transform:scale(1);}}
+.success-title{font-family:var(--font-ui);font-size:20px;font-weight:700;color:var(--text-primary);letter-spacing:1px;}
+.success-sub{font-family:var(--font-body);font-size:13px;color:var(--text-muted);margin-top:8px;}
+
+/* ── PDF STYLES (embedded) ── */
+.pdf-only{display:none;}
+
+@media (max-width:360px){
+  .stats-grid{grid-template-columns:1fr 1fr;gap:8px;}
+  .stat-card .value{font-size:32px;}
+  .dash-time{font-size:28px;}
+}
+
+/* FIX: Remove permanent blue strip overlapping FAB */
+html, body{
+    overflow-x:hidden !important;
+    background:var(--surface) !important;
+}
+
+.snackbar{
+    display:none !important;
+}
+
+.fab{
+    z-index:9999 !important;
+    bottom:24px !important;
+}
+
+.scroll-content{
+    overflow-x:hidden !important;
+}
+
+
+/* Dashboard fit-to-screen optimization */
+.dashboard-grid,
+.quick-grid,
+.stats-grid{
+    gap:10px !important;
+}
+
+.card,
+.quick-btn,
+.stat-card{
+    padding:10px !important;
+    min-height:auto !important;
+}
+
+.dashboard-screen{
+    height:100vh !important;
+    overflow:hidden !important;
+}
+
+.main-content{
+    padding-bottom:8px !important;
+}
+
+h1,h2,h3{
+    margin:4px 0 !important;
+}
+
+.screen{
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+}
+
+@media (max-height: 850px){
+    .card,
+    .quick-btn,
+    .stat-card{
+        transform:scale(0.96);
+        transform-origin:top center;
+    }
+}
+
+
+/* ADAPTIVE FIX: guarantees no scroll on any device */
+
+/* Make dashboard use exact viewport height */
+#dashboard{
+    height:100vh !important;
+    display:flex !important;
+    flex-direction:column !important;
+}
+
+/* Header fixed, content auto fits */
+.dash-header{
+    flex-shrink:0;
+    padding:14px 16px 18px !important;
+}
+
+/* Critical fix: content auto-calculates remaining height */
+#dashboard .scroll-content{
+    flex:1 !important;
+    overflow:hidden !important;
+    padding-bottom:10px !important;
+}
+
+/* Reduce only what’s necessary */
+.dash-time{
+    font-size:30px !important;
+}
+
+/* Slight tighten */
+.section-header{
+    padding:12px 16px 6px !important;
+}
+
+.stats-grid{
+    gap:8px !important;
+    padding:12px 16px !important;
+}
+
+/* Keep buttons same look */
+.action-card{
+    padding:14px !important;
+}
+
+</style>
+</head>
+<body>
+
+<!-- ═══════════════════════════════════════ SPLASH ═══════════════════════════════════════ -->
+<div id="splash" class="screen">
+  <div class="splash-rings">
+    <div class="ring"></div>
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+  <div class="splash-shield" id="splashShield">
+    <svg width="120" height="140" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="sg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#E8C96A"/><stop offset="100%" stop-color="#C9A84C"/></linearGradient>
+        <linearGradient id="sg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stop-color="#1A3260"/><stop offset="100%" stop-color="#0A1628"/></linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="3" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <!-- Shield body -->
+      <path d="M60 4L8 24V68C8 100 30 128 60 136C90 128 112 100 112 68V24L60 4Z" fill="url(#sg2)" stroke="url(#sg1)" stroke-width="2.5" filter="url(#glow)"/>
+      <!-- Inner shield detail -->
+      <path d="M60 14L18 30V66C18 94 36 118 60 126C84 118 102 94 102 66V30L60 14Z" fill="none" stroke="#C9A84C22" stroke-width="1"/>
+      <!-- P letter -->
+      <text x="60" y="82" text-anchor="middle" font-family="Orbitron,sans-serif" font-size="36" font-weight="900" fill="url(#sg1)" filter="url(#glow)">P</text>
+      <!-- Car icon line -->
+      <rect x="30" y="98" width="60" height="2" fill="#C9A84C44" rx="1"/>
+      <!-- Corner decorations -->
+      <circle cx="20" cy="68" r="3" fill="#C9A84C44"/>
+      <circle cx="100" cy="68" r="3" fill="#C9A84C44"/>
+    </svg>
+  </div>
+  <div class="splash-logo-text">UAQ-SECURITY</div>
+  <div class="splash-sub">Digital Parking Tracker</div>
+  <div class="splash-bar"><div class="splash-bar-fill"></div></div>
+  <div class="splash-footer">
+    <div class="by">Application Created by:</div>
+    <div class="author">Raja Farrakh Ayyaz</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ WELCOME ═══════════════════════════════════════ -->
+<div id="welcome" class="screen hidden">
+  <div class="splash-rings">
+    <div class="ring"></div>
+    <div class="ring"></div>
+  </div>
+  <div class="welcome-quote">Professional Security Begins With Accurate Monitoring.</div>
+  <div class="welcome-line"></div>
+  <div class="welcome-sub">UAQ-SECURITY SYSTEM</div>
+</div>
+
+<!-- ═══════════════════════════════════════ LOGIN ═══════════════════════════════════════ -->
+<div id="login" class="screen hidden">
+  <div class="login-bg-pattern"></div>
+  <div class="login-card">
+    <div class="login-logo">
+      <svg width="60" height="70" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M60 4L8 24V68C8 100 30 128 60 136C90 128 112 100 112 68V24L60 4Z" fill="rgba(13,31,60,0.8)" stroke="#C9A84C" stroke-width="2.5"/>
+        <text x="60" y="82" text-anchor="middle" font-family="Orbitron,sans-serif" font-size="36" font-weight="900" fill="#C9A84C">P</text>
+      </svg>
+      <div class="brand">UAQ-SECURITY</div>
+      <div class="sub">DIGITAL PARKING TRACKER</div>
+    </div>
+    <div class="login-title">SECURE ACCESS</div>
+    <div class="input-group">
+      <label>PASSWORD</label>
+      <input type="password" id="loginPass" placeholder="Enter password" autocomplete="current-password">
+      <span class="eye-toggle" onclick="togglePwd('loginPass',this)">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+      </span>
+    </div>
+    <button class="btn-login" onclick="doLogin()">UNLOCK</button>
+    <div class="login-hint">Default password: 1234</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ DASHBOARD ═══════════════════════════════════════ -->
+<div id="dashboard" class="screen hidden">
+  <div class="dash-header">
+    <div class="dash-brand">UAQ-SECURITY</div>
+    <div class="dash-subtitle">DIGITAL PARKING TRACKER</div>
+    <div class="dash-datetime">
+      <div class="dash-date" id="dashDate"></div>
+      <div class="dash-time" id="dashTime"></div>
+    </div>
+  </div>
+  <div class="scroll-content" style="padding-bottom:100px;">
+    <!-- Stats -->
+    <div class="stats-grid">
+      <div class="stat-card daily">
+        <div class="label">DAILY</div>
+        <div class="value" id="statDaily">0</div>
+        <div class="icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#C9A84C" stroke-width="1.5"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        </div>
+      </div>
+      <div class="stat-card pri">
+        <div class="label">PRI</div>
+        <div class="value" id="statPri">0</div>
+        <div class="icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#2980B9" stroke-width="1.5"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
+        </div>
+      </div>
+      <div class="stat-card pol">
+        <div class="label" style="color:var(--danger);">POL</div>
+        <div class="value" id="statPol">0</div>
+        <div class="icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="1.5"><path d="M12 2L3 7v5c0 5.5 3.8 10.7 9 12 5.2-1.3 9-6.5 9-12V7L12 2z"/></svg>
+        </div>
+      </div>
+      <div class="stat-card missing">
+        <div class="label" style="color:var(--danger);">MISSING KEYS</div>
+        <div class="value" id="statMissing">0</div>
+        <div class="icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="1.5"><circle cx="8" cy="15" r="5"/><path d="M21 3l-9.2 9.2"/><path d="M15 9l2 2"/></svg>
+        </div>
+      </div>
+    </div>
+    <!-- Actions -->
+    <div class="section-header">
+      <div class="sh-title">QUICK ACCESS</div>
+      <div class="sh-line"></div>
+    </div>
+    <div class="action-grid">
+      <div class="action-card logs" onclick="showScreen('logs')">
+        <div class="ac-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#2980B9" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg>
+        </div>
+        <div class="ac-title">VEHICLE LOGS</div>
+        <div class="ac-desc">View all records</div>
+      </div>
+      <div class="action-card export" onclick="showScreen('export')">
+        <div class="ac-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#27AE60" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17,8 12,3 7,8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        </div>
+        <div class="ac-title">EXPORT</div>
+        <div class="ac-desc">PDF, Excel, Word</div>
+      </div>
+      <div class="action-card settings" onclick="showScreen('settings')">
+        <div class="ac-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#7F8C8D" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+        </div>
+        <div class="ac-title">SETTINGS</div>
+        <div class="ac-desc">App configuration</div>
+      </div>
+      <div class="action-card" style="" onclick="showScreen('newEntry')">
+        <div class="ac-icon" style="background:#FEF5E7;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#B7770D" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        </div>
+        <div class="ac-title">NEW ENTRY</div>
+        <div class="ac-desc">Log a vehicle</div>
+      </div>
+    </div>
+    <!-- Footer in dashboard -->
+    <div class="app-footer mt-16">
+      <div class="footer-by">Application Created by:</div>
+      <div class="footer-name">Raja Farrakh Ayyaz</div>
+    </div>
+  </div>
+  
+</div>
+
+<!-- ═══════════════════════════════════════ NEW ENTRY ═══════════════════════════════════════ -->
+<div id="newEntry" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">NEW ENTRY</div>
+      <div class="sub">Log Vehicle</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content" id="newEntryScroll">
+    <div class="form-container">
+      <!-- Live Preview -->
+      <div id="livePreview" class="preview-card">
+        <div class="preview-plate" id="prevPlate">— — —</div>
+        <div class="preview-model" id="prevModel">Vehicle Model</div>
+        <div class="preview-row">
+          <div class="preview-badge" id="prevParking">Parking: —</div>
+          <div class="preview-badge" id="prevCat">Category: —</div>
+          <div class="preview-badge" id="prevKey">Key: —</div>
+        </div>
+      </div>
+
+      <!-- Date & Time -->
+      <div class="form-section">
+        <div class="form-section-title">ENTRY TIME</div>
+        <div class="field">
+          <label>DATE & TIME</label>
+          <input type="text" id="entryDateTime" readonly>
+        </div>
+      </div>
+
+      <!-- Vehicle Info -->
+      <div class="form-section">
+        <div class="form-section-title">VEHICLE INFORMATION</div>
+        <div class="field-row">
+          <div class="field">
+            <label>EMIRATE <span class="req">*</span></label>
+            <select id="entryEmirate" onchange="updatePreview()">
+              <option value="">Select</option>
+              <option>AD</option><option>DXB</option><option>SHJ</option>
+              <option>AJM</option><option>UAQ</option><option>RAK</option>
+              <option>FUJ</option><option>UAE</option><option>KSA</option>
+              <option>OMN</option><option>QTR</option><option>BAH</option>
+              <option>POL</option>
+            </select>
+            <div class="error-msg" id="err-entryEmirate">Select emirate</div>
+          </div>
+          <div class="field">
+            <label>CODE <span class="req">*</span></label>
+            <input type="text" id="entryCode" placeholder="A" maxlength="5" oninput="updatePreview()">
+            <div class="error-msg" id="err-entryCode">Enter code</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>NUMBER <span class="req">*</span></label>
+          <input type="text" id="entryNumber" placeholder="12345" inputmode="text" oninput="updatePreview()">
+          <div class="error-msg" id="err-entryNumber">Enter number</div>
+        </div>
+        <div class="field">
+          <label>MODEL <span class="req">*</span></label>
+          <input type="text" id="entryModel" placeholder="Toyota Camry" oninput="updatePreview()">
+          <div class="error-msg" id="err-entryModel">Enter model</div>
+        </div>
+      </div>
+
+      <!-- Parking Info -->
+      <div class="form-section">
+        <div class="form-section-title">PARKING DETAILS</div>
+        <div class="field">
+          <label>PARKING <span class="req">*</span></label>
+          <input type="text" id="entryParking" placeholder="P-14" oninput="updatePreview()">
+          <div class="error-msg" id="err-entryParking">Enter parking</div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>KEY <span class="req">*</span></label>
+            <select id="entryKey" onchange="updatePreview()">
+              <option value="">Select</option>
+              <option>Security</option><option>Car</option>
+              <option>Technician</option><option>Missing</option>
+            </select>
+            <div class="error-msg" id="err-entryKey">Select key</div>
+          </div>
+          <div class="field">
+            <label>CATEGORY <span class="req">*</span></label>
+            <select id="entryCategory" onchange="updatePreview()">
+              <option value="">Select</option>
+              <option>PRI</option><option>POL</option>
+            </select>
+            <div class="error-msg" id="err-entryCategory">Select category</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>NOTE</label>
+          <textarea id="entryNote" placeholder="Optional note..."></textarea>
+        </div>
+      </div>
+
+      <button class="btn-submit" onclick="submitEntry()">LOG VEHICLE</button>
+
+      <div class="app-footer mt-16">
+        <div class="footer-by">Application Created by:</div>
+        <div class="footer-name">Raja Farrakh Ayyaz</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ LOGS ═══════════════════════════════════════ -->
+<div id="logs" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">VEHICLE LOGS</div>
+      <div class="sub" id="logsCount">0 records</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showDeleteAllDialog()">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><polyline points="3,6 5,6 21,6"/><path d="M19,6l-1,14a2,2,0,0,1-2,2H8a2,2,0,0,1-2-2L5,6"/><path d="M10,11v6"/><path d="M14,11v6"/><path d="M9,6V4a1,1,0,0,1,1-1h4a1,1,0,0,1,1,1v2"/></svg>
+      </div>
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="search-bar">
+    <div class="search-input-wrap">
+      <span class="search-icon"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
+      <input type="text" id="searchInput" placeholder="Search plate, model, parking..." oninput="renderLogs()">
+    </div>
+  </div>
+  <div class="scroll-content no-fab" id="logsContainer">
+    <div class="no-results">
+      <div class="nr-icon">🚗</div>
+      <div class="nr-text">No vehicles logged yet</div>
+    </div>
+  </div>
+  <button class="fab" onclick="showScreen('newEntry')">
+    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#0A1628" stroke-width="3"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+  </button>
+</div>
+
+<!-- ═══════════════════════════════════════ EXPORT ═══════════════════════════════════════ -->
+<div id="export" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">EXPORT CENTER</div>
+      <div class="sub">Download reports</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content no-fab">
+    <div class="section-header"><div class="sh-title">SELECT FORMAT</div><div class="sh-line"></div></div>
+    <div class="export-grid">
+      <div class="export-card pdf" onclick="exportPDF()">
+        <div class="ec-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/></svg></div>
+        <div class="ec-title">PDF</div>
+        <div class="ec-desc">Professional report</div>
+      </div>
+      <div class="export-card excel" onclick="exportExcel()">
+        <div class="ec-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#27AE60" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg></div>
+        <div class="ec-title">EXCEL</div>
+        <div class="ec-desc">Spreadsheet (.csv)</div>
+      </div>
+      <div class="export-card word" onclick="exportWord()">
+        <div class="ec-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#2980B9" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><path d="M8 13h2l2 5 2-5h2"/></svg></div>
+        <div class="ec-title">WORD</div>
+        <div class="ec-desc">Document (.doc)</div>
+      </div>
+      <div class="export-card txt" onclick="exportTXT()">
+        <div class="ec-icon"><svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="#7F8C8D" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><line x1="12" y1="9" x2="8" y2="9"/></svg></div>
+        <div class="ec-title">TXT</div>
+        <div class="ec-desc">Plain text file</div>
+      </div>
+      <div class="export-card whatsapp" onclick="shareWhatsApp()" style="grid-column:span 2;">
+        <div class="ec-icon" style="width:auto;border-radius:16px;padding:0 20px;gap:12px;flex-direction:row;justify-content:center;">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="#25D366"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M11.999 2C6.477 2 2 6.477 2 12c0 1.89.525 3.66 1.438 5.168L2 22l4.868-1.426A9.956 9.956 0 0 0 12 22c5.523 0 10-4.477 10-10S17.523 2 12 2zm0 18c-1.768 0-3.42-.476-4.845-1.31l-.347-.21-3.602 1.054 1.01-3.528-.226-.362A7.961 7.961 0 0 1 4 12c0-4.411 3.589-8 8-8s8 3.589 8 8-3.589 8-8 8z"/></svg>
+          <span style="font-family:var(--font-ui);font-size:16px;font-weight:700;color:#25D366;">WHATSAPP</span>
+        </div>
+        <div class="ec-desc" style="text-align:center;margin-top:8px;">Share via WhatsApp</div>
+      </div>
+    </div>
+    <div class="app-footer">
+      <div class="footer-by">Application Created by:</div>
+      <div class="footer-name">Raja Farrakh Ayyaz</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SETTINGS ═══════════════════════════════════════ -->
+<div id="settings" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">SETTINGS</div>
+      <div class="sub">App configuration</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content no-fab">
+    <div style="height:16px;"></div>
+
+    <!-- Appearance -->
+    <div class="settings-group">
+      <div class="settings-group-title">APPEARANCE</div>
+      <div class="settings-item" onclick="toggleDarkMode()">
+        <div class="si-icon" style="background:#F0F4FA;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#7F8C8D" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+        <div class="si-content">
+          <div class="si-title">Dark Mode</div>
+          <div class="si-desc">Switch to dark theme</div>
+        </div>
+        <div class="toggle-switch" id="darkToggle"></div>
+      </div>
+    </div>
+
+    <!-- Security -->
+    <div class="settings-group">
+      <div class="settings-group-title">SECURITY</div>
+      <div class="settings-item" onclick="showScreen('changePassword')">
+        <div class="si-icon" style="background:#FEF5E7;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#B7770D" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        </div>
+        <div class="si-content">
+          <div class="si-title">Change Password</div>
+          <div class="si-desc">Update access password</div>
+        </div>
+        <div class="si-right"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+    </div>
+
+    <!-- Tools -->
+    <div class="settings-group">
+      <div class="settings-group-title">TOOLS</div>
+      <div class="settings-item" onclick="toggleFlashlight()">
+        <div class="si-icon" style="background:#FFFDE7;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#F39C12" stroke-width="2"><path d="M8.5 2H15.5L19 8L12 22L5 8L8.5 2Z"/><line x1="12" y1="2" x2="12" y2="8"/><line x1="5" y1="8" x2="19" y2="8"/></svg>
+        </div>
+        <div class="si-content">
+          <div class="si-title">Flashlight</div>
+          <div class="si-desc" id="flashDesc">Turn on flashlight</div>
+        </div>
+        <div class="toggle-switch" id="flashToggle"></div>
+      </div>
+    </div>
+
+    <!-- About -->
+    <div class="settings-group">
+      <div class="settings-group-title">APPLICATION</div>
+      <div class="settings-item" onclick="showScreen('about')">
+        <div class="si-icon" style="background:#EBF5FB;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#2980B9" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        </div>
+        <div class="si-content">
+          <div class="si-title">About App</div>
+          <div class="si-desc">UAQ-SECURITY v1.0</div>
+        </div>
+        <div class="si-right"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9,18 15,12 9,6"/></svg></div>
+      </div>
+      <div class="settings-item" onclick="confirmLogout()">
+        <div class="si-icon" style="background:#FDEDEC;">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16,17 21,12 16,7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </div>
+        <div class="si-content">
+          <div class="si-title" style="color:var(--danger);">Logout</div>
+          <div class="si-desc">Return to login screen</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="app-footer" style="margin-top:16px;">
+      <div class="footer-by">Application Created by:</div>
+      <div class="footer-name">Raja Farrakh Ayyaz</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ CHANGE PASSWORD ═══════════════════════════════════════ -->
+<div id="changePassword" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">CHANGE PASSWORD</div>
+      <div class="sub">Security settings</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content no-fab">
+    <div class="cp-container">
+      <div class="form-section">
+        <div class="form-section-title">UPDATE PASSWORD</div>
+        <div class="field">
+          <label>CURRENT PASSWORD</label>
+          <input type="password" id="cpCurrent" placeholder="Current password">
+        </div>
+        <div class="field">
+          <label>NEW PASSWORD</label>
+          <input type="password" id="cpNew" placeholder="New password">
+        </div>
+        <div class="field">
+          <label>CONFIRM NEW PASSWORD</label>
+          <input type="password" id="cpConfirm" placeholder="Confirm new password">
+        </div>
+        <button class="btn-submit" onclick="changePassword()">UPDATE PASSWORD</button>
+      </div>
+    </div>
+    <div class="app-footer">
+      <div class="footer-by">Application Created by:</div>
+      <div class="footer-name">Raja Farrakh Ayyaz</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ ABOUT ═══════════════════════════════════════ -->
+<div id="about" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">ABOUT</div>
+      <div class="sub">Application info</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content no-fab">
+    <div class="about-container">
+      <div class="about-logo">
+        <svg width="90" height="105" viewBox="0 0 120 140" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M60 4L8 24V68C8 100 30 128 60 136C90 128 112 100 112 68V24L60 4Z" fill="var(--primary)" stroke="#C9A84C" stroke-width="2.5"/>
+          <text x="60" y="82" text-anchor="middle" font-family="Orbitron,sans-serif" font-size="36" font-weight="900" fill="#C9A84C">P</text>
+        </svg>
+        <div class="about-brand">UAQ-SECURITY</div>
+        <div class="about-sub">DIGITAL PARKING TRACKER</div>
+      </div>
+      <div class="about-desc">Offline Vehicle Parking Logging System for security personnel. Fast, reliable, and professional vehicle management with complete offline capability.</div>
+      <div class="about-creator">
+        <div class="ac-label">Application Created by:</div>
+        <div class="ac-name">Raja Farrakh Ayyaz</div>
+      </div>
+      <div style="margin-top:16px;background:var(--card-bg);border-radius:16px;padding:16px;border:1px solid var(--border);">
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="font-family:var(--font-ui);color:var(--text-muted);font-size:13px;">Version</span>
+          <span style="font-family:var(--font-ui);color:var(--accent-gold);font-size:13px;font-weight:700;">1.0.0</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">
+          <span style="font-family:var(--font-ui);color:var(--text-muted);font-size:13px;">Storage</span>
+          <span style="font-family:var(--font-ui);color:var(--success);font-size:13px;font-weight:700;">100% Offline</span>
+        </div>
+        <div style="display:flex;justify-content:space-between;padding:8px 0;">
+          <span style="font-family:var(--font-ui);color:var(--text-muted);font-size:13px;">Platform</span>
+          <span style="font-family:var(--font-ui);color:var(--text-secondary);font-size:13px;font-weight:700;">Android PWA</span>
+        </div>
+      </div>
+    </div>
+    <div class="app-footer">
+      <div class="footer-by">Application Created by:</div>
+      <div class="footer-name">Raja Farrakh Ayyaz</div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ EDIT ENTRY SCREEN ═══════════════════════════════════════ -->
+<div id="editEntry" class="screen hidden">
+  <div class="app-header">
+    <div class="header-back" onclick="goBack()">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15,18 9,12 15,6"/></svg>
+    </div>
+    <div class="header-title">
+      <div class="main">EDIT ENTRY</div>
+      <div class="sub">Modify record</div>
+    </div>
+    <div class="header-actions">
+      <div class="header-btn" onclick="showScreen('dashboard')">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-content">
+    <div class="form-container">
+      <input type="hidden" id="editId">
+      <div class="form-section">
+        <div class="form-section-title">VEHICLE INFORMATION</div>
+        <div class="field-row">
+          <div class="field">
+            <label>EMIRATE <span class="req">*</span></label>
+            <select id="editEmirate">
+              <option value="">Select</option>
+              <option>AD</option><option>DXB</option><option>SHJ</option>
+              <option>AJM</option><option>UAQ</option><option>RAK</option>
+              <option>FUJ</option><option>UAE</option><option>KSA</option>
+              <option>OMN</option><option>QTR</option><option>BAH</option>
+              <option>POL</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>CODE <span class="req">*</span></label>
+            <input type="text" id="editCode" maxlength="5">
+          </div>
+        </div>
+        <div class="field">
+          <label>NUMBER <span class="req">*</span></label>
+          <input type="text" id="editNumber">
+        </div>
+        <div class="field">
+          <label>MODEL <span class="req">*</span></label>
+          <input type="text" id="editModel">
+        </div>
+      </div>
+      <div class="form-section">
+        <div class="form-section-title">PARKING DETAILS</div>
+        <div class="field">
+          <label>PARKING <span class="req">*</span></label>
+          <input type="text" id="editParking">
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label>KEY <span class="req">*</span></label>
+            <select id="editKey">
+              <option value="">Select</option>
+              <option>Security</option><option>Car</option>
+              <option>Technician</option><option>Missing</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>CATEGORY <span class="req">*</span></label>
+            <select id="editCategory">
+              <option value="">Select</option>
+              <option>PRI</option><option>POL</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label>NOTE</label>
+          <textarea id="editNote"></textarea>
+        </div>
+      </div>
+      <button class="btn-submit" onclick="saveEdit()">SAVE CHANGES</button>
+      <div class="app-footer mt-16">
+        <div class="footer-by">Application Created by:</div>
+        <div class="footer-name">Raja Farrakh Ayyaz</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ DIALOGS ═══════════════════════════════════════ -->
+<div class="dialog-overlay hidden" id="dialogOverlay" onclick="closeDialogOutside(event)">
+  <div class="dialog-sheet center-dialog" id="dialogBox">
+    <div class="dialog-title" id="dialogTitle"></div>
+    <div class="dialog-msg" id="dialogMsg"></div>
+    <div class="dialog-actions" id="dialogActions"></div>
+  </div>
+</div>
+
+<!-- Delete Options Dialog -->
+<div class="dialog-overlay hidden" id="deleteDialog" onclick="closeDialogOutside2(event)">
+  <div class="dialog-sheet" id="deleteDialogBox">
+    <div class="dialog-handle"></div>
+    <div class="dialog-title">Delete Options</div>
+    <div class="dialog-msg" id="deleteDialogMsg">What would you like to delete?</div>
+    <div class="dialog-actions" id="deleteDialogActions"></div>
+  </div>
+</div>
+
+<!-- Delete All Dialog -->
+<div class="dialog-overlay hidden" id="deleteAllDialog" onclick="closeDialogOutside3(event)">
+  <div class="dialog-sheet center-dialog">
+    <div class="dialog-title" style="color:var(--danger);">⚠ Delete All Records</div>
+    <div class="dialog-msg">This will permanently delete ALL vehicle records. This action cannot be undone.</div>
+    <div class="dialog-actions">
+      <button class="dialog-btn danger" onclick="deleteAllRecords()">DELETE ALL</button>
+      <button class="dialog-btn ghost" onclick="closeDeleteAll()">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ SNACKBAR ═══════════════════════════════════════ -->
+<div class="snackbar" id="snackbar">
+  <span id="snackbarMsg"></span>
+</div>
+
+<!-- ═══════════════════════════════════════ SUCCESS OVERLAY ═══════════════════════════════════════ -->
+<div class="success-overlay hidden" id="successOverlay">
+  <div class="success-box">
+    <div class="success-circle">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3"><polyline points="20,6 9,17 4,12"/></svg>
+    </div>
+    <div class="success-title">Vehicle Logged Successfully</div>
+    <div class="success-sub" id="successSub"></div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════ JS ═══════════════════════════════════════ -->
+<script>
+// ══════════════════════ STATE ══════════════════════
+let records = [];
+let password = '1234';
+let darkMode = false;
+let flashlightOn = false;
+let flashTrack = null;
+let screenHistory = ['dashboard'];
+let currentEditId = null;
+let clockInterval = null;
+
+// ══════════════════════ INIT ══════════════════════
+window.addEventListener('DOMContentLoaded', () => {
+  loadStorage();
+  startSplash();
+  setupKeyboardScroll();
+  updateDarkMode();
+});
+
+function loadStorage() {
+  try {
+    const r = localStorage.getItem('uaq_records');
+    if (r) records = JSON.parse(r);
+    const p = localStorage.getItem('uaq_password');
+    if (p) password = p;
+    const d = localStorage.getItem('uaq_dark');
+    if (d) darkMode = d === 'true';
+  } catch(e) {}
+}
+
+function saveStorage() {
+  try {
+    localStorage.setItem('uaq_records', JSON.stringify(records));
+    localStorage.setItem('uaq_password', password);
+    localStorage.setItem('uaq_dark', darkMode);
+  } catch(e) {}
+}
+
+// ══════════════════════ SPLASH / WELCOME ══════════════════════
+function startSplash() {
+  setTimeout(() => {
+    hide('splash');
+    show('welcome');
+    setTimeout(() => {
+      hide('welcome');
+      show('login');
+    }, 2000);
+  }, 2500);
+}
+
+// ══════════════════════ SHOW/HIDE ══════════════════════
+function show(id) { document.getElementById(id).classList.remove('hidden'); }
+function hide(id) { document.getElementById(id).classList.add('hidden'); }
+
+function showScreen(id) {
+  const all = ['dashboard','newEntry','logs','export','settings','changePassword','about','editEntry'];
+  all.forEach(s => document.getElementById(s).classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  if (id !== 'login') {
+    if (screenHistory[screenHistory.length-1] !== id) screenHistory.push(id);
+  }
+  if (id === 'dashboard') { updateDashboard(); }
+  if (id === 'logs') { renderLogs(); }
+  if (id === 'newEntry') { resetNewEntry(); }
+  if (id === 'settings') { syncSettingsUI(); }
+}
+
+function goBack() {
+  if (screenHistory.length > 1) {
+    screenHistory.pop();
+    const prev = screenHistory[screenHistory.length-1];
+    const all = ['dashboard','newEntry','logs','export','settings','changePassword','about','editEntry'];
+    all.forEach(s => document.getElementById(s).classList.add('hidden'));
+    document.getElementById(prev).classList.remove('hidden');
+    if (prev === 'dashboard') updateDashboard();
+    if (prev === 'logs') renderLogs();
+    if (prev === 'settings') syncSettingsUI();
+  } else {
+    showScreen('dashboard');
+  }
+}
+
+// ══════════════════════ LOGIN ══════════════════════
+function doLogin() {
+  const val = document.getElementById('loginPass').value;
+  if (val === password) {
+    hide('login');
+    showScreen('dashboard');
+    document.getElementById('loginPass').value = '';
+  } else {
+    showSnack('Incorrect password', 'error');
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginPass').focus();
+  }
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && !document.getElementById('login').classList.contains('hidden')) {
+    doLogin();
+  }
+});
+
+function togglePwd(id, el) {
+  const inp = document.getElementById(id);
+  if (inp.type === 'password') {
+    inp.type = 'text';
+    el.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+  } else {
+    inp.type = 'password';
+    el.innerHTML = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+  }
+}
+
+// ══════════════════════ CLOCK ══════════════════════
+function startClock() {
+  updateClock();
+  if (clockInterval) clearInterval(clockInterval);
+  clockInterval = setInterval(updateClock, 1000);
+}
+
+function updateClock() {
+  const now = new Date();
+  const days = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const months = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  const dateEl = document.getElementById('dashDate');
+  const timeEl = document.getElementById('dashTime');
+  if (dateEl) dateEl.textContent = `${days[now.getDay()]}, ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()}`;
+  if (timeEl) timeEl.textContent = formatTime(now);
+}
+
+function formatTime(d) {
+  let h = d.getHours(), m = d.getMinutes(), s = d.getSeconds();
+  const am = h < 12 ? 'AM' : 'PM';
+  h = h % 12 || 12;
+  return `${pad(h)}:${pad(m)}:${pad(s)} ${am}`;
+}
+
+function pad(n) { return n.toString().padStart(2,'0'); }
+
+function updateDashboard() {
+  startClock();
+  updateStats();
+}
+
+function updateStats() {
+  const today = todayKey();
+  const todayRecs = records.filter(r => r.dateKey === today);
+  const polCount = records.filter(r => r.category === 'POL').length;
+  const missingCount = records.filter(r => r.key === 'Missing').length;
+  const priCount = records.filter(r => r.category === 'PRI').length;
+  animateCounter('statDaily', todayRecs.length);
+  animateCounter('statPri', priCount);
+  animateCounter('statPol', polCount);
+  animateCounter('statMissing', missingCount);
+}
+
+function animateCounter(id, val) {
+  const el = document.getElementById(id);
+  if (el) {
+    el.textContent = val;
+    el.classList.remove('counter-anim');
+    void el.offsetWidth;
+    el.classList.add('counter-anim');
+  }
+}
+
+function todayKey() {
+  const n = new Date();
+  return `${n.getFullYear()}-${pad(n.getMonth()+1)}-${pad(n.getDate())}`;
+}
+
+function dateLabel(key) {
+  const today = todayKey();
+  const yest = new Date(); yest.setDate(yest.getDate()-1);
+  const yestKey = `${yest.getFullYear()}-${pad(yest.getMonth()+1)}-${pad(yest.getDate())}`;
+  if (key === today) return 'Today';
+  if (key === yestKey) return 'Yesterday';
+  const [y,m,d] = key.split('-');
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${months[parseInt(m)-1]} ${parseInt(d)}, ${y}`;
+}
+
+// ══════════════════════ ENTRY FORM ══════════════════════
+function resetNewEntry() {
+  const fields = ['entryEmirate','entryCode','entryNumber','entryModel','entryParking','entryKey','entryCategory','entryNote'];
+  fields.forEach(f => {
+    const el = document.getElementById(f);
+    if (el) el.value = '';
+    const err = document.getElementById('err-'+f);
+    if (err) { err.classList.remove('show'); }
+    if (el) el.classList.remove('error');
+  });
+  document.getElementById('entryDateTime').value = getCurrentDateTimeStr();
+  updatePreview();
+  setInterval(() => {
+    const el = document.getElementById('entryDateTime');
+    if (el) el.value = getCurrentDateTimeStr();
+  }, 1000);
+}
+
+function getCurrentDateTimeStr() {
+  const now = new Date();
+  const days = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  return `${days[now.getDay()]} ${months[now.getMonth()]} ${now.getDate()}, ${now.getFullYear()} — ${formatTime(now)}`;
+}
+
+function updatePreview() {
+  const em = document.getElementById('entryEmirate').value;
+  const co = document.getElementById('entryCode').value.toUpperCase();
+  const nu = document.getElementById('entryNumber').value;
+  const mo = document.getElementById('entryModel').value;
+  const pa = document.getElementById('entryParking').value;
+  const ca = document.getElementById('entryCategory').value;
+  const ke = document.getElementById('entryKey').value;
+
+  const plate = [em,co,nu].filter(Boolean).join('-') || '— — —';
+  document.getElementById('prevPlate').textContent = plate;
+  document.getElementById('prevModel').textContent = mo || 'Vehicle Model';
+  document.getElementById('prevParking').textContent = pa ? `Parking: ${pa}` : 'Parking: —';
+
+  const catEl = document.getElementById('prevCat');
+  catEl.textContent = ca ? `Category: ${ca}` : 'Category: —';
+  catEl.className = 'preview-badge' + (ca === 'POL' ? ' pol' : '');
+
+  const keyEl = document.getElementById('prevKey');
+  keyEl.textContent = ke ? `Key: ${ke}` : 'Key: —';
+  keyEl.className = 'preview-badge' + (ke === 'Missing' ? ' missing' : '');
+}
+
+function validateEntry() {
+  let ok = true;
+  const required = ['entryEmirate','entryCode','entryNumber','entryModel','entryParking','entryKey','entryCategory'];
+  let firstErr = null;
+  required.forEach(f => {
+    const el = document.getElementById(f);
+    const err = document.getElementById('err-'+f);
+    if (!el.value.trim()) {
+      el.classList.add('error');
+      if (err) err.classList.add('show');
+      ok = false;
+      if (!firstErr) firstErr = el;
+    } else {
+      el.classList.remove('error');
+      if (err) err.classList.remove('show');
+    }
+  });
+  if (firstErr) firstErr.scrollIntoView({behavior:'smooth',block:'center'});
+  return ok;
+}
+
+function submitEntry() {
+  if (!validateEntry()) return;
+  const em = document.getElementById('entryEmirate').value;
+  const co = document.getElementById('entryCode').value.toUpperCase();
+  const nu = document.getElementById('entryNumber').value;
+  const pa = document.getElementById('entryParking').value;
+
+  // Check duplicate vehicle
+  const dupVehicle = records.find(r => r.emirate === em && r.code === co && r.number === nu);
+  if (dupVehicle) {
+    showDupDialog('Duplicate Vehicle Detected', `A record for ${em}-${co}-${nu} already exists.`, dupVehicle, 'vehicle');
+    return;
+  }
+  // Check duplicate parking
+  const dupParking = records.find(r => r.parking.toLowerCase() === pa.toLowerCase());
+  if (dupParking) {
+    showDupDialog('Duplicate Parking Detected', `Parking spot "${pa}" is already occupied by ${dupParking.emirate}-${dupParking.code}-${dupParking.number}.`, dupParking, 'parking');
+    return;
+  }
+  saveEntry();
+}
+
+function showDupDialog(title, msg, existing, type) {
+  document.getElementById('dialogTitle').textContent = title;
+  document.getElementById('dialogMsg').textContent = msg;
+  document.getElementById('dialogActions').innerHTML = `
+    <button class="dialog-btn secondary" onclick="viewExistingRecord('${existing.id}')">View Existing Record</button>
+    <button class="dialog-btn primary" onclick="closeDialog(); saveEntry();">Continue Anyway</button>
+    <button class="dialog-btn ghost" onclick="closeDialog()">Cancel</button>
+  `;
+  show('dialogOverlay');
+}
+
+function viewExistingRecord(id) {
+  closeDialog();
+  const rec = records.find(r => r.id === id);
+  if (rec) {
+    showScreen('logs');
+    setTimeout(() => {
+      document.getElementById('searchInput').value = rec.emirate + '-' + rec.code + '-' + rec.number;
+      renderLogs();
+    }, 100);
+  }
+}
+
+function saveEntry() {
+  const now = new Date();
+  const entry = {
+    id: Date.now().toString(),
+    timestamp: now.toISOString(),
+    dateKey: todayKey(),
+    time: formatTime(now),
+    emirate: document.getElementById('entryEmirate').value,
+    code: document.getElementById('entryCode').value.toUpperCase(),
+    number: document.getElementById('entryNumber').value,
+    model: document.getElementById('entryModel').value,
+    parking: document.getElementById('entryParking').value,
+    key: document.getElementById('entryKey').value,
+    category: document.getElementById('entryCategory').value,
+    note: document.getElementById('entryNote').value
+  };
+  records.unshift(entry);
+  saveStorage();
+  showSuccess(`${entry.emirate}-${entry.code}-${entry.number} → ${entry.parking}`);
+  setTimeout(() => {
+    hideSuccess();
+    showScreen('dashboard');
+  }, 1800);
+}
+
+function showSuccess(sub) {
+  document.getElementById('successSub').textContent = sub;
+  show('successOverlay');
+}
+function hideSuccess() { hide('successOverlay'); }
+
+// ══════════════════════ LOGS ══════════════════════
+function renderLogs() {
+  const q = (document.getElementById('searchInput').value || '').toLowerCase();
+  let filtered = records.filter(r => {
+    if (!q) return true;
+    const plate = `${r.emirate}-${r.code}-${r.number}`.toLowerCase();
+    return plate.includes(q) || r.model.toLowerCase().includes(q) ||
+      r.parking.toLowerCase().includes(q) || r.category.toLowerCase().includes(q) ||
+      r.key.toLowerCase().includes(q) || r.emirate.toLowerCase().includes(q);
+  });
+
+  const container = document.getElementById('logsContainer');
+  document.getElementById('logsCount').textContent = `${filtered.length} record${filtered.length !== 1 ? 's' : ''}`;
+
+  if (filtered.length === 0) {
+    container.innerHTML = `<div class="no-results"><div class="nr-icon">🚗</div><div class="nr-text">${q ? 'No matching records' : 'No vehicles logged yet'}</div></div>`;
+    return;
+  }
+
+  // Group by date
+  const groups = {};
+  filtered.forEach(r => {
+    if (!groups[r.dateKey]) groups[r.dateKey] = [];
+    groups[r.dateKey].push(r);
+  });
+  const sortedKeys = Object.keys(groups).sort((a,b) => b.localeCompare(a));
+
+  container.innerHTML = sortedKeys.map(key => `
+    <div class="date-group">
+      <div class="date-group-header" onclick="toggleGroup(this)">
+        <div class="dg-title">${dateLabel(key)}</div>
+        <div style="display:flex;align-items:center;gap:8px;">
+          <div class="dg-count">${groups[key].length} vehicle${groups[key].length!==1?'s':''}</div>
+          <button class="dialog-btn danger" style="padding:4px 10px;font-size:11px;border-radius:8px;" onclick="event.stopPropagation();confirmDeleteDay('${key}')">Delete Day</button>
+          <svg class="dg-chevron" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6,9 12,15 18,9"/></svg>
+        </div>
+      </div>
+      <div class="date-group-body">
+        ${groups[key].map(r => renderCard(r)).join('')}
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderCard(r) {
+  const catClass = r.category === 'POL' ? 'cat-pol' : 'cat-pri';
+  const keyClass = `key-${r.key.toLowerCase()}`;
+  return `
+    <div class="log-card" id="card-${r.id}">
+      <div class="log-card-header">
+        <div class="log-plate">${r.emirate}-${r.code}-${r.number}</div>
+        <div class="log-time">${r.time}</div>
+      </div>
+      <div class="log-card-body">
+        <div class="log-details">
+          <span class="log-badge model">${r.model}</span>
+          <span class="log-badge parking">🅿 ${r.parking}</span>
+          <span class="log-badge ${catClass}">${r.category}</span>
+          <span class="log-badge ${keyClass}">🔑 ${r.key}</span>
+        </div>
+        ${r.note ? `<div class="log-note">${r.note}</div>` : ''}
+        <div class="log-card-actions">
+          <button class="log-btn edit" onclick="openEdit('${r.id}')">✏ EDIT</button>
+          <button class="log-btn delete" onclick="showDeleteOptions('${r.id}','${r.dateKey}')">🗑 DELETE</button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function toggleGroup(header) {
+  header.classList.toggle('collapsed');
+  const body = header.nextElementSibling;
+  body.style.display = header.classList.contains('collapsed') ? 'none' : '';
+}
+
+// ══════════════════════ DELETE ══════════════════════
+function showDeleteOptions(id, dateKey) {
+  document.getElementById('deleteDialogActions').innerHTML = `
+    <button class="dialog-btn danger" onclick="deleteEntry('${id}')">Delete This Entry</button>
+    <button class="dialog-btn danger" onclick="confirmDeleteDay('${dateKey}')">Delete Entire Day</button>
+    <button class="dialog-btn ghost" onclick="closeDeleteOptions()">Cancel</button>
+  `;
+  show('deleteDialog');
+}
+
+function closeDeleteOptions() { hide('deleteDialog'); }
+
+function deleteEntry(id) {
+  records = records.filter(r => r.id !== id);
+  saveStorage();
+  closeDeleteOptions();
+  renderLogs();
+  updateStats();
+  showSnack('Entry deleted', 'warning');
+}
+
+function confirmDeleteDay(dateKey) {
+  hide('deleteDialog');
+  document.getElementById('dialogTitle').textContent = 'Delete Day Records';
+  document.getElementById('dialogMsg').textContent = `Delete all records for ${dateLabel(dateKey)}?`;
+  document.getElementById('dialogActions').innerHTML = `
+    <button class="dialog-btn danger" onclick="deleteDay('${dateKey}')">Delete Day</button>
+    <button class="dialog-btn ghost" onclick="closeDialog()">Cancel</button>
+  `;
+  show('dialogOverlay');
+}
+
+function deleteDay(dateKey) {
+  records = records.filter(r => r.dateKey !== dateKey);
+  saveStorage();
+  closeDialog();
+  renderLogs();
+  updateStats();
+  showSnack('Day records deleted', 'warning');
+}
+
+function showDeleteAllDialog() { show('deleteAllDialog'); }
+function closeDeleteAll() { hide('deleteAllDialog'); }
+
+function deleteAllRecords() {
+  records = [];
+  saveStorage();
+  closeDeleteAll();
+  renderLogs();
+  updateStats();
+  showSnack('All records deleted', 'error');
+}
+
+// ══════════════════════ EDIT ══════════════════════
+function openEdit(id) {
+  const r = records.find(x => x.id === id);
+  if (!r) return;
+  currentEditId = id;
+  document.getElementById('editId').value = id;
+  document.getElementById('editEmirate').value = r.emirate;
+  document.getElementById('editCode').value = r.code;
+  document.getElementById('editNumber').value = r.number;
+  document.getElementById('editModel').value = r.model;
+  document.getElementById('editParking').value = r.parking;
+  document.getElementById('editKey').value = r.key;
+  document.getElementById('editCategory').value = r.category;
+  document.getElementById('editNote').value = r.note || '';
+  showScreen('editEntry');
+}
+
+function saveEdit() {
+  const id = document.getElementById('editId').value;
+  const idx = records.findIndex(r => r.id === id);
+  if (idx === -1) return;
+  records[idx].emirate = document.getElementById('editEmirate').value;
+  records[idx].code = document.getElementById('editCode').value.toUpperCase();
+  records[idx].number = document.getElementById('editNumber').value;
+  records[idx].model = document.getElementById('editModel').value;
+  records[idx].parking = document.getElementById('editParking').value;
+  records[idx].key = document.getElementById('editKey').value;
+  records[idx].category = document.getElementById('editCategory').value;
+  records[idx].note = document.getElementById('editNote').value;
+  saveStorage();
+  showSnack('Record updated successfully', 'success');
+  showScreen('logs');
+}
+
+// ══════════════════════ DIALOGS ══════════════════════
+function closeDialog() { hide('dialogOverlay'); }
+function closeDialogOutside(e) { if (e.target.id === 'dialogOverlay') closeDialog(); }
+function closeDialogOutside2(e) { if (e.target.id === 'deleteDialog') closeDeleteOptions(); }
+function closeDialogOutside3(e) { if (e.target.id === 'deleteAllDialog') closeDeleteAll(); }
+
+// ══════════════════════ SNACKBAR ══════════════════════
+let snackTimer;
+function showSnack(msg, type = '') {
+  const el = document.getElementById('snackbar');
+  el.className = 'snackbar show' + (type ? ` ${type}` : '');
+  document.getElementById('snackbarMsg').textContent = msg;
+  clearTimeout(snackTimer);
+  snackTimer = setTimeout(() => el.classList.remove('show'), 3000);
+}
+
+// ══════════════════════ DARK MODE ══════════════════════
+function toggleDarkMode() {
+  darkMode = !darkMode;
+  updateDarkMode();
+  saveStorage();
+}
+
+function updateDarkMode() {
+  document.body.classList.toggle('dark-mode', darkMode);
+  syncSettingsUI();
+}
+
+function syncSettingsUI() {
+  const dt = document.getElementById('darkToggle');
+  if (dt) dt.classList.toggle('on', darkMode);
+  const ft = document.getElementById('flashToggle');
+  if (ft) ft.classList.toggle('on', flashlightOn);
+}
+
+// ══════════════════════ FLASHLIGHT ══════════════════════
+async function toggleFlashlight() {
+  try {
+    if (!flashlightOn) {
+      const stream = await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'}});
+      flashTrack = stream.getVideoTracks()[0];
+      await flashTrack.applyConstraints({advanced:[{torch:true}]});
+      flashlightOn = true;
+      document.getElementById('flashDesc').textContent = 'Turn off flashlight';
+    } else {
+      if (flashTrack) { await flashTrack.applyConstraints({advanced:[{torch:false}]}); flashTrack.stop(); flashTrack = null; }
+      flashlightOn = false;
+      document.getElementById('flashDesc').textContent = 'Turn on flashlight';
+    }
+    syncSettingsUI();
+  } catch(e) {
+    showSnack('Flashlight not available on this device', 'error');
+  }
+}
+
+// ══════════════════════ PASSWORD ══════════════════════
+function changePassword() {
+  const cur = document.getElementById('cpCurrent').value;
+  const nw = document.getElementById('cpNew').value;
+  const cn = document.getElementById('cpConfirm').value;
+  if (cur !== password) { showSnack('Current password incorrect', 'error'); return; }
+  if (!nw) { showSnack('Enter new password', 'error'); return; }
+  if (nw !== cn) { showSnack('Passwords do not match', 'error'); return; }
+  password = nw;
+  saveStorage();
+  document.getElementById('cpCurrent').value = '';
+  document.getElementById('cpNew').value = '';
+  document.getElementById('cpConfirm').value = '';
+  showSnack('Password updated successfully', 'success');
+  showScreen('settings');
+}
+
+// ══════════════════════ LOGOUT ══════════════════════
+function confirmLogout() {
+  document.getElementById('dialogTitle').textContent = 'Logout';
+  document.getElementById('dialogMsg').textContent = 'Are you sure you want to logout?';
+  document.getElementById('dialogActions').innerHTML = `
+    <button class="dialog-btn primary" onclick="doLogout()">Logout</button>
+    <button class="dialog-btn ghost" onclick="closeDialog()">Cancel</button>
+  `;
+  show('dialogOverlay');
+}
+function doLogout() {
+  closeDialog();
+  screenHistory = ['dashboard'];
+  const all = ['dashboard','newEntry','logs','export','settings','changePassword','about','editEntry'];
+  all.forEach(s => document.getElementById(s).classList.add('hidden'));
+  show('login');
+}
+
+// ══════════════════════ KEYBOARD SCROLL ══════════════════════
+function setupKeyboardScroll() {
+  const inputs = document.querySelectorAll('input,select,textarea');
+  inputs.forEach(inp => {
+    inp.addEventListener('focus', () => {
+      setTimeout(() => {
+        inp.scrollIntoView({behavior:'smooth',block:'center'});
+      }, 300);
+    });
+  });
+}
+
+// ══════════════════════ EXPORT ══════════════════════
+function getExportData() {
+  const today = todayKey();
+  return {
+    date: new Date().toLocaleDateString('en-US',{weekday:'long',year:'numeric',month:'long',day:'numeric'}),
+    time: formatTime(new Date()),
+    records,
+    daily: records.filter(r => r.dateKey === today).length,
+    pri: records.filter(r => r.category === 'PRI').length,
+    pol: records.filter(r => r.category === 'POL').length,
+    missing: records.filter(r => r.key === 'Missing').length
+  };
+}
+
+function exportTXT() {
+  const d = getExportData();
+  let txt = `UAQ-SECURITY - Digital Parking Tracker\n`;
+  txt += `${'='.repeat(50)}\n`;
+  txt += `Report Date: ${d.date}\nReport Time: ${d.time}\n`;
+  txt += `${'='.repeat(50)}\n\n`;
+  txt += `SUMMARY\n${'-'.repeat(30)}\n`;
+  txt += `Daily: ${d.daily} | PRI: ${d.pri} | POL: ${d.pol} | Missing Keys: ${d.missing}\n\n`;
+  txt += `VEHICLE RECORDS\n${'-'.repeat(30)}\n`;
+  d.records.forEach((r,i) => {
+    txt += `\n#${i+1} ${r.emirate}-${r.code}-${r.number}\n`;
+    txt += `  Date: ${dateLabel(r.dateKey)} | Time: ${r.time}\n`;
+    txt += `  Model: ${r.model} | Parking: ${r.parking}\n`;
+    txt += `  Key: ${r.key} | Category: ${r.category}\n`;
+    if (r.note) txt += `  Note: ${r.note}\n`;
+  });
+  txt += `\n${'='.repeat(50)}\nApplication Created by: Raja Farrakh Ayyaz\n`;
+  download('UAQ-Security-Report.txt', txt, 'text/plain');
+  showSnack('TXT exported successfully', 'success');
+}
+
+function exportExcel() {
+  const d = getExportData();
+  let csv = 'Time,Emirate,Code,Number,Model,Parking,Key,Category,Note,Date\n';
+  d.records.forEach(r => {
+    csv += `"${r.time}","${r.emirate}","${r.code}","${r.number}","${r.model}","${r.parking}","${r.key}","${r.category}","${r.note || ''}","${dateLabel(r.dateKey)}"\n`;
+  });
+  download('UAQ-Security-Report.csv', csv, 'text/csv');
+  showSnack('Excel (CSV) exported successfully', 'success');
+}
+
+function exportWord() {
+  const d = getExportData();
+  let html = `<html><head><meta charset="utf-8"><style>body{font-family:Arial,sans-serif;margin:40px;}h1{color:#0D1F3C;}h2{color:#1A3260;}table{width:100%;border-collapse:collapse;}th{background:#0D1F3C;color:#fff;padding:8px;}td{padding:6px;border:1px solid #ccc;font-size:12px;}.footer{margin-top:40px;text-align:center;color:#666;font-size:12px;}
+/* FIX: Remove permanent blue strip overlapping FAB */
+html, body{
+    overflow-x:hidden !important;
+    background:var(--surface) !important;
+}
+
+.snackbar{
+    display:none !important;
+}
+
+.fab{
+    z-index:9999 !important;
+    bottom:24px !important;
+}
+
+.scroll-content{
+    overflow-x:hidden !important;
+}
+
+
+/* Dashboard fit-to-screen optimization */
+.dashboard-grid,
+.quick-grid,
+.stats-grid{
+    gap:10px !important;
+}
+
+.card,
+.quick-btn,
+.stat-card{
+    padding:10px !important;
+    min-height:auto !important;
+}
+
+.dashboard-screen{
+    height:100vh !important;
+    overflow:hidden !important;
+}
+
+.main-content{
+    padding-bottom:8px !important;
+}
+
+h1,h2,h3{
+    margin:4px 0 !important;
+}
+
+.screen{
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+}
+
+@media (max-height: 850px){
+    .card,
+    .quick-btn,
+    .stat-card{
+        transform:scale(0.96);
+        transform-origin:top center;
+    }
+}
+
+
+/* ADAPTIVE FIX: guarantees no scroll on any device */
+
+/* Make dashboard use exact viewport height */
+#dashboard{
+    height:100vh !important;
+    display:flex !important;
+    flex-direction:column !important;
+}
+
+/* Header fixed, content auto fits */
+.dash-header{
+    flex-shrink:0;
+    padding:14px 16px 18px !important;
+}
+
+/* Critical fix: content auto-calculates remaining height */
+#dashboard .scroll-content{
+    flex:1 !important;
+    overflow:hidden !important;
+    padding-bottom:10px !important;
+}
+
+/* Reduce only what’s necessary */
+.dash-time{
+    font-size:30px !important;
+}
+
+/* Slight tighten */
+.section-header{
+    padding:12px 16px 6px !important;
+}
+
+.stats-grid{
+    gap:8px !important;
+    padding:12px 16px !important;
+}
+
+/* Keep buttons same look */
+.action-card{
+    padding:14px !important;
+}
+
+</style></head><body>`;
+  html += `<h1>UAQ-SECURITY</h1><h2>Digital Parking Tracker</h2>`;
+  html += `<p>Report Date: ${d.date} | Time: ${d.time}</p>`;
+  html += `<p><b>Daily:</b> ${d.daily} | <b>PRI:</b> ${d.pri} | <b>POL:</b> ${d.pol} | <b>Missing Keys:</b> ${d.missing}</p>`;
+  html += `<table><tr><th>Time</th><th>Emirate</th><th>Code</th><th>Number</th><th>Model</th><th>Parking</th><th>Key</th><th>Category</th><th>Note</th></tr>`;
+  d.records.forEach(r => {
+    html += `<tr><td>${r.time}</td><td>${r.emirate}</td><td>${r.code}</td><td>${r.number}</td><td>${r.model}</td><td>${r.parking}</td><td>${r.key}</td><td>${r.category}</td><td>${r.note||''}</td></tr>`;
+  });
+  html += `</table><div class="footer"><small>Application Created by:</small><br><b>Raja Farrakh Ayyaz</b></div></body></html>`;
+  download('UAQ-Security-Report.doc', html, 'application/msword');
+  showSnack('Word document exported successfully', 'success');
+}
+
+function exportPDF() {
+  const d = getExportData();
+  const win = window.open('', '_blank');
+  if (!win) { showSnack('Allow popups to export PDF', 'error'); return; }
+  let html = `<!DOCTYPE html><html><head><meta charset="utf-8"><title>UAQ-SECURITY Report</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@700&family=Inter:wght@400;600;700&display=swap');
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Inter',Arial,sans-serif;background:#fff;color:#222;font-size:11px;}
+.page{max-width:794px;margin:0 auto;padding:20px;}
+.header{background:linear-gradient(135deg,#0D1F3C,#1A3260);color:#fff;padding:20px;border-radius:8px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;}
+.header-left .brand{font-family:'Orbitron',sans-serif;font-size:20px;font-weight:700;color:#C9A84C;letter-spacing:3px;}
+.header-left .sub{font-size:12px;color:#8899AA;letter-spacing:2px;margin-top:2px;}
+.header-right{text-align:right;font-size:11px;color:#8899AA;}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:16px;}
+.sum-card{border-radius:8px;padding:12px;text-align:center;}
+.sum-card.daily{background:#FEF9E7;border:1px solid #F9E79F;}
+.sum-card.pri{background:#EBF5FB;border:1px solid #AED6F1;}
+.sum-card.pol{background:#FDEDEC;border:1px solid #F5B7B1;}
+.sum-card.missing{background:#FDEDEC;border:1px solid #F5B7B1;}
+.sum-card .s-label{font-size:10px;color:#666;font-weight:600;letter-spacing:1px;}
+.sum-card .s-value{font-family:'Orbitron',sans-serif;font-size:24px;font-weight:700;margin-top:2px;}
+.sum-card.daily .s-value{color:#B7770D;}
+.sum-card.pri .s-value{color:#1A5276;}
+.sum-card.pol .s-value,.sum-card.missing .s-value{color:#C0392B;}
+table{width:100%;border-collapse:collapse;margin-bottom:16px;}
+thead tr{background:#0D1F3C;}
+thead th{color:#C9A84C;padding:7px 6px;text-align:left;font-size:10px;font-weight:700;letter-spacing:1px;border:1px solid #1A3260;}
+tbody tr:nth-child(even){background:#F8FAFE;}
+tbody tr:nth-child(odd){background:#fff;}
+tbody td{padding:5px 6px;border:1px solid #E8EEF5;font-size:10px;vertical-align:middle;}
+.badge-pol{background:#FDEDEC;color:#C0392B;padding:2px 6px;border-radius:4px;font-weight:700;}
+.badge-pri{background:#EBF5FB;color:#1A5276;padding:2px 6px;border-radius:4px;font-weight:700;}
+.badge-missing{background:#FDEDEC;color:#C0392B;font-weight:700;}
+.footer-pdf{text-align:center;border-top:2px solid #0D1F3C;padding-top:10px;margin-top:10px;}
+.footer-pdf .by{font-size:10px;color:#999;}
+.footer-pdf .name{font-size:13px;font-weight:700;color:#0D1F3C;letter-spacing:1px;}
+@media print{body{-webkit-print-color-adjust:exact;print-color-adjust:exact;}}
+
+/* FIX: Remove permanent blue strip overlapping FAB */
+html, body{
+    overflow-x:hidden !important;
+    background:var(--surface) !important;
+}
+
+.snackbar{
+    display:none !important;
+}
+
+.fab{
+    z-index:9999 !important;
+    bottom:24px !important;
+}
+
+.scroll-content{
+    overflow-x:hidden !important;
+}
+
+
+/* Dashboard fit-to-screen optimization */
+.dashboard-grid,
+.quick-grid,
+.stats-grid{
+    gap:10px !important;
+}
+
+.card,
+.quick-btn,
+.stat-card{
+    padding:10px !important;
+    min-height:auto !important;
+}
+
+.dashboard-screen{
+    height:100vh !important;
+    overflow:hidden !important;
+}
+
+.main-content{
+    padding-bottom:8px !important;
+}
+
+h1,h2,h3{
+    margin:4px 0 !important;
+}
+
+.screen{
+    overflow-y:auto !important;
+    -webkit-overflow-scrolling:touch;
+}
+
+@media (max-height: 850px){
+    .card,
+    .quick-btn,
+    .stat-card{
+        transform:scale(0.96);
+        transform-origin:top center;
+    }
+}
+
+
+/* ADAPTIVE FIX: guarantees no scroll on any device */
+
+/* Make dashboard use exact viewport height */
+#dashboard{
+    height:100vh !important;
+    display:flex !important;
+    flex-direction:column !important;
+}
+
+/* Header fixed, content auto fits */
+.dash-header{
+    flex-shrink:0;
+    padding:14px 16px 18px !important;
+}
+
+/* Critical fix: content auto-calculates remaining height */
+#dashboard .scroll-content{
+    flex:1 !important;
+    overflow:hidden !important;
+    padding-bottom:10px !important;
+}
+
+/* Reduce only what’s necessary */
+.dash-time{
+    font-size:30px !important;
+}
+
+/* Slight tighten */
+.section-header{
+    padding:12px 16px 6px !important;
+}
+
+.stats-grid{
+    gap:8px !important;
+    padding:12px 16px !important;
+}
+
+/* Keep buttons same look */
+.action-card{
+    padding:14px !important;
+}
+
+</style></head><body>
+<div class="page">
+<div class="header">
+  <div class="header-left"><div class="brand">UAQ-SECURITY</div><div class="sub">DIGITAL PARKING TRACKER</div></div>
+  <div class="header-right">Report Date<br><b style="color:#fff;">${d.date}</b><br>${d.time}</div>
+</div>
+<div class="summary">
+  <div class="sum-card daily"><div class="s-label">DAILY</div><div class="s-value">${d.daily}</div></div>
+  <div class="sum-card pri"><div class="s-label">PRI</div><div class="s-value">${d.pri}</div></div>
+  <div class="sum-card pol"><div class="s-label">POL</div><div class="s-value">${d.pol}</div></div>
+  <div class="sum-card missing"><div class="s-label">MISSING KEYS</div><div class="s-value">${d.missing}</div></div>
+</div>
+<table>
+<thead><tr><th>#</th><th>TIME</th><th>EMIRATE</th><th>CODE</th><th>NUMBER</th><th>MODEL</th><th>PARKING</th><th>KEY</th><th>CATEGORY</th><th>NOTE</th></tr></thead>
+<tbody>`;
+  d.records.forEach((r,i) => {
+    const catBadge = r.category === 'POL' ? `<span class="badge-pol">POL</span>` : `<span class="badge-pri">PRI</span>`;
+    const keyStyle = r.key === 'Missing' ? `class="badge-missing"` : '';
+    html += `<tr><td>${i+1}</td><td>${r.time}</td><td><b>${r.emirate}</b></td><td>${r.code}</td><td>${r.number}</td><td>${r.model}</td><td>${r.parking}</td><td ${keyStyle}>${r.key}</td><td>${catBadge}</td><td>${r.note||''}</td></tr>`;
+  });
+  html += `</tbody></table>
+<div class="footer-pdf"><div class="by">Application Created by:</div><div class="name">Raja Farrakh Ayyaz</div></div>
+</div>
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+  win.document.write(html);
+  win.document.close();
+  showSnack('PDF report opened for printing', 'success');
+}
+
+function shareWhatsApp() {
+  const d = getExportData();
+  let msg = `🛡 *UAQ-SECURITY*\n_Digital Parking Tracker_\n\n`;
+  msg += `📅 *${d.date}*\n⏰ ${d.time}\n\n`;
+  msg += `📊 *SUMMARY*\n`;
+  msg += `• Daily: ${d.daily}\n• PRI: ${d.pri}\n• POL: ${d.pol}\n• Missing Keys: ${d.missing}\n\n`;
+  msg += `🚗 *VEHICLE RECORDS*\n${'─'.repeat(20)}\n`;
+  d.records.slice(0, 30).forEach((r,i) => {
+    msg += `\n*${i+1}. ${r.emirate}-${r.code}-${r.number}*\n`;
+    msg += `   ${r.model} | 🅿 ${r.parking}\n`;
+    msg += `   🔑 ${r.key} | 📋 ${r.category}\n`;
+    if (r.note) msg += `   📝 ${r.note}\n`;
+  });
+  if (d.records.length > 30) msg += `\n... and ${d.records.length - 30} more records\n`;
+  msg += `\n${'─'.repeat(20)}\n_Application Created by: Raja Farrakh Ayyaz_`;
+  window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+  showSnack('Opening WhatsApp...', 'success');
+}
+
+function download(filename, content, type) {
+  const blob = new Blob([content], {type});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+}
+</script>
+</body>
+</html>
